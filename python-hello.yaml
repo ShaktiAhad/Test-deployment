@@ -6,7 +6,7 @@ spec:
   source:
     git:
       uri: "https://github.com/ShaktiAhad/Test-deployment.git"
-      ref: "test"
+      ref: "main"
   strategy:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
