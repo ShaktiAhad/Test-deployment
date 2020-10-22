@@ -17,25 +17,6 @@ pipeline {
                         oc project ${DEV_PROJECT}
                         sleep 5
                     '''
-                }
-            }
-        stage('checking the app exist or not') {
-            steps {
-                openshift.withCluster() {
-                    openshift.withProject(${DEV_PROJECT}) {
-                        script {
-                            if (openshift.newApp(${APP_NAME}).exists()) {
-                                oc project ${DEV_PROJECT}
-                                oc start-build ${APP_NAME}
-                                oc expose svc/${APP_NAME}
-                            } else {
-                                oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
-                                oc expose dvc/${APP_NAME}
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         stage('Wait for S2I build to complete') {
