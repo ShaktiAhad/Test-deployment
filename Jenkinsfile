@@ -19,14 +19,16 @@ pipeline {
                     '''
                     
                     sh'''
-                        if !${APP_NAME}.exists()
+                        if (!${APP_NAME}.exists()){
                             oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
                             oc expose dvc/${APP_NAME}
-                        else
+                            }
+                        else {
                             oc project ${DEV_PROJECT}
                             oc delete all --selector app=${APP_NAME}
                             oc start-build ${APP_NAME}
                             oc expose svc/${APP_NAME}
+                            }
                     '''
                 }
             }
