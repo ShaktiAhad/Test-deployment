@@ -17,7 +17,7 @@ pipeline {
                         oc project ${DEV_PROJECT}
                         sleep 5
 
-                        if [!${APP_NAME}.exists() ] 
+                        if { !${APP_NAME}.exists() } 
                             then
                                 oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
                                 oc expose dvc/${APP_NAME}
