@@ -26,6 +26,7 @@ pipeline {
                         openshift.withProject( "${DEV_PROJECT}" ) {
                             script {
                                 if (openshift.selector("dc", "${APP_NAME}").exists()) {
+                                    openshift.selector("all", "${APP_NAME}").delete
                                     sh '''
                                         oc project ${DEV_PROJECT}
                                         oc start-build ${APP_NAME}
