@@ -29,8 +29,7 @@ pipeline {
                                     sh '''
                                         oc project ${DEV_PROJECT}
                                         oc start-build ${APP_NAME}
-                                        sleep 120
-                                        oc expose svc/${APP_NAME}
+                                        sleep 60
                                     '''
                                 } else {
                                     sh '''
