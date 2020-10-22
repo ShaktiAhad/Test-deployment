@@ -12,26 +12,25 @@ pipeline {
     stages {
         stage('Launch new app in DEV env') {
                 steps {
-                    echo '### Checking and Creating ${DEV_PROJECT} project and ${APP_NAME} application###'
                     sh '''   
                         oc project ${DEV_PROJECT}
                         sleep 5
                     '''
-                    
-                    sh'''
-                        if (!${APP_NAME}.exists()){
-                            oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
-                            oc expose dvc/${APP_NAME}
-                            }
-                        else {
-                            oc project ${DEV_PROJECT}
-                            oc delete all --selector app=${APP_NAME}
-                            oc start-build ${APP_NAME}
-                            oc expose svc/${APP_NAME}
-                            }
-                    '''
                 }
             }
+        stage('checking the app exist or not') {
+            steps {
+                script {
+                    if (!${APP_NAME}.exists()) {
+                        oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
+                        oc expose dvc/${APP_NAME}
+                    } else {
+                        oc project ${DEV_PROJECT}
+                        oc delete all --selector app=${APP_NAME}
+                        oc start-build ${APP_NAME}
+                        oc expose svc/${APP_NAME}
+                    }
+
         stage('Wait for S2I build to complete') {
                 steps {
                     script {
@@ -61,4 +60,7 @@ pipeline {
                 }
             }
         }
+    }
+}
+}
 }
