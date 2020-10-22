@@ -29,13 +29,13 @@ pipeline {
                                     sh '''
                                         oc project ${DEV_PROJECT}
                                         oc start-build ${APP_NAME}
-                                        sleep 10
+                                        sleep 120
                                         oc expose svc/${APP_NAME}
                                     '''
                                 } else {
                                     sh '''
                                         oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
-                                        sleep 10
+                                        sleep 120
                                         oc expose dvc/${APP_NAME}
                                     '''
                             }
