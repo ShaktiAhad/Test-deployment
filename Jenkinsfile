@@ -16,7 +16,9 @@ pipeline {
                     sh '''   
                         oc project ${DEV_PROJECT}
                         sleep 5
-
+                    '''
+                    
+                    sh'''
                         if !${APP_NAME}.exists()
                             oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
                             oc expose dvc/${APP_NAME}
@@ -25,7 +27,6 @@ pipeline {
                             oc delete all --selector app=${APP_NAME}
                             oc start-build ${APP_NAME}
                             oc expose svc/${APP_NAME}
-                        fi
                     '''
                 }
             }
