@@ -4,6 +4,7 @@ metadata:
   name: "python-hello"
 spec:
   source:
+    contextDir: test
     git:
       uri: "https://github.com/ShaktiAhad/Test-deployment.git"
       ref: "main"
