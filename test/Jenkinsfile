@@ -33,6 +33,7 @@ pipeline {
                                         sleep 60
                                     '''
                                 } else {
+                                    openshift.selector("all", "${APP_NAME}").delete
                                     sh '''
                                         oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
                                         sleep 120
