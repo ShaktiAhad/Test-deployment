@@ -20,20 +20,22 @@ pipeline {
             }
         stage('checking the app exist or not') {
             steps {
-                script {
-                    if (!${APP_NAME}.exists()) {
-                        sh '''
-                            oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
-                            oc expose dvc/${APP_NAME}
-                        '''
-                    } else {
-                        sh '''
-                            oc project ${DEV_PROJECT}
-                            oc delete all --selector app=${APP_NAME}
-                            oc start-build ${APP_NAME}
-                            oc expose svc/${APP_NAME}
-                        '''
+                openshift.withCluster() {
+                    openshift.withProject(${DEV_PROJECT}) {
+                        script {
+                            if (openshift.newApp(${APP_NAME}).exists()) {
+                                oc project ${DEV_PROJECT}
+                                oc start-build ${APP_NAME}
+                                oc expose svc/${APP_NAME}
+                            } else {
+                                oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
+                                oc expose dvc/${APP_NAME}
+                            }
+                        }
                     }
+                }
+            }
+        }
 
         stage('Wait for S2I build to complete') {
                 steps {
@@ -65,6 +67,3 @@ pipeline {
             }
         }
     }
-}
-}
-}
