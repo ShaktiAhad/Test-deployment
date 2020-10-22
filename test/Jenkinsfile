@@ -5,34 +5,28 @@ pipeline {
       }
     }
     environment {
-        DEV_PROJECT = "python-app"
-        APP_NAME = "python-hello"
-        APP_GIT_URL = "https://github.com/ShaktiAhad/Test-deployment.git"
+        DEV_PROJECT = "shakti-pythonhello"
+        APP_NAME = "python-helloworld"
+        APP_GIT_URL = "https://github.com/ShaktiAhad/python.git"
         CONTEXT_DIR = "test"
     }
     stages {
-        stage('checking the app exist or not') {
-            steps {
-                script{
-                    openshift.withCluster() {
-                        openshift.withProject( "${DEV_PROJECT}" ) {
-                            script {
-                                    
-                                    sh '''
-                                        oc project ${DEV_PROJECT}
-                                        oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
-                                        sleep 60
-                                        oc expose dvc/${APP_NAME}
-                                    '''
-                            
-                        }
-                    }
+        stage('Launch new app in DEV env') {
+                steps {
+                    echo '### Creating ${DEV_PROJECT} project ###'
+                    sh '''
+                            oc project ${DEV_PROJECT}
+                            sleep 5
+                    '''
+
+                    echo '### Creating ${APP_NAME} app###'
+                    sh '''
+                            oc project ${DEV_PROJECT}
+                            oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
+                            oc expose svc/${APP_NAME}
+                    '''
                 }
             }
-        }
-        }
-
-
         stage('Wait for S2I build to complete') {
                 steps {
                     script {
@@ -62,4 +56,4 @@ pipeline {
                 }
             }
         }
-    }
+}
