@@ -25,21 +25,13 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject( "${DEV_PROJECT}" ) {
                             script {
-                                if (openshift.selector("dc", "${APP_NAME}").exists()) {
-                         
-                                    sh '''
-                                        oc project ${DEV_PROJECT}
-                                        oc start-build ${APP_NAME}
-                                        sleep 60
-                                    '''
-                                } else {
                                     
                                     sh '''
                                         oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
-                                        sleep 120
+                                        sleep 60
                                         oc expose dvc/${APP_NAME}
                                     '''
-                            }
+                            
                         }
                     }
                 }
