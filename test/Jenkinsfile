@@ -11,14 +11,6 @@ pipeline {
         CONTEXT_DIR = "test"
     }
     stages {
-        stage('Launch new app in DEV env') {
-                steps {
-                    sh '''   
-                        oc project ${DEV_PROJECT}
-                        sleep 5
-                    '''
-                }
-            }
         stage('checking the app exist or not') {
             steps {
                 script{
@@ -27,6 +19,7 @@ pipeline {
                             script {
                                     
                                     sh '''
+                                        oc project ${DEV_PROJECT}
                                         oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
                                         sleep 60
                                         oc expose dvc/${APP_NAME}
