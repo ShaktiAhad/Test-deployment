@@ -22,13 +22,17 @@ pipeline {
             steps {
                 script {
                     if (!${APP_NAME}.exists()) {
-                        oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
-                        oc expose dvc/${APP_NAME}
+                        sh '''
+                            oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL}
+                            oc expose dvc/${APP_NAME}
+                        '''
                     } else {
-                        oc project ${DEV_PROJECT}
-                        oc delete all --selector app=${APP_NAME}
-                        oc start-build ${APP_NAME}
-                        oc expose svc/${APP_NAME}
+                        sh '''
+                            oc project ${DEV_PROJECT}
+                            oc delete all --selector app=${APP_NAME}
+                            oc start-build ${APP_NAME}
+                            oc expose svc/${APP_NAME}
+                        '''
                     }
 
         stage('Wait for S2I build to complete') {
