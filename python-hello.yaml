@@ -1,0 +1,13 @@
+kind: "BuildConfig"
+apiVersion: "build.openshift.io/v1"
+metadata:
+  name: "python-hello"
+spec:
+  source:
+    git:
+      uri: "https://github.com/ShaktiAhad/Test-deployment.git"
+      ref: "test"
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: "Jenkinsfile"
