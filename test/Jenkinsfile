@@ -13,21 +13,37 @@ pipeline {
     stages {
         stage('Launch new app in DEV env') {
                 steps {
-                    echo '### Creating ${DEV_PROJECT} project ###'
-                    sh '''
-                            oc project ${DEV_PROJECT}
-                            oc delete all -l app=${APP_NAME}
-                            sleep 5
-                    '''
-
-                    echo '### Creating ${APP_NAME} app###'
-                    sh '''
-                            oc project ${DEV_PROJECT}
-                            oc new-app --as-deployment-config --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
-                            oc expose svc/${APP_NAME}
+                    sh '''   
+                        oc project ${DEV_PROJECT}
+                        sleep 5
                     '''
                 }
             }
+        stage('checking application existence') {
+            steps {
+                script{
+                    openshift.withCluster() {
+                        openshift.withProject(${DEV_PROJECT}) {
+                            script {
+                                if (openshift.bc(${APP_NAME}).exists()) {
+                                    sh '''
+                                        oc project ${DEV_PROJECT}
+                                        oc start-build ${APP_NAME}
+                                    '''
+                                } else {
+                                    sh '''
+                                        oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
+                                        oc expose svc/${APP_NAME}
+                                    '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+
+
         stage('Wait for S2I build to complete') {
                 steps {
                     script {
@@ -57,4 +73,4 @@ pipeline {
                 }
             }
         }
-}
+    }
