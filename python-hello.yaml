@@ -4,7 +4,7 @@ metadata:
   name: "python"
 spec:
   source:
-    contextDir: test
+    contextDir: test2
     git:
       uri: "https://github.com/ShaktiAhad/Test-deployment.git"
       ref: "main"
