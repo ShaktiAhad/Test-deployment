@@ -26,7 +26,8 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject( "${DEV_PROJECT}" ) {
                             script {
-                                if (openshift.bc( "${APP_NAME_DEV}" ).exists()) {
+                                def bc = openshift.selector( "bc", "${APP_NAME_DEV}")
+                                if (bc.exists()) {
                                     sh '''
                                         oc project ${DEV_PROJECT}
                                         oc start-build ${APP_NAME_DEV}
