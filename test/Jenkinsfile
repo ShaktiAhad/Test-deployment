@@ -19,7 +19,7 @@ pipeline {
                     '''
                 }
             }
-        stage('checking the app exist or not') {
+        stage('checking application existence') {
             steps {
                 script{
                     openshift.withCluster() {
@@ -29,7 +29,6 @@ pipeline {
                                     sh '''
                                         oc project ${DEV_PROJECT}
                                         oc start-build ${APP_NAME}
-    
                                     '''
                                 } else {
                                     sh '''

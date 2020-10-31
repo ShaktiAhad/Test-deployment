@@ -6,9 +6,10 @@ pipeline {
     }
     environment {
         DEV_PROJECT = "python-app"
-        APP_NAME = "python-hello"
+        APP_NAME_DEV = "python-hello-dev"
+        APP_NAME_PROD = "python-hello-prod"
         APP_GIT_URL = "https://github.com/ShaktiAhad/Test-deployment.git"
-        CONTEXT_DIR = "test"
+        CONTEXT_DIR = "test2"
     }
     stages {
         stage('Launch new app in DEV env') {
@@ -19,22 +20,22 @@ pipeline {
                     '''
                 }
             }
-        stage('checking the app exist or not') {
+        stage('start a new build or create a new app') {
             steps {
                 script{
                     openshift.withCluster() {
                         openshift.withProject(${DEV_PROJECT}) {
                             script {
-                                if (openshift.bc(${APP_NAME}).exists()) {
+                                if (openshift.bc(${APP_NAME_DEV}).exists()) {
                                     sh '''
                                         oc project ${DEV_PROJECT}
-                                        oc start-build ${APP_NAME}
+                                        oc start-build ${APP_NAME_DEV}
     
                                     '''
                                 } else {
                                     sh '''
-                                        oc new-app --name ${APP_NAME} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
-                                        oc expose svc/${APP_NAME}
+                                        oc new-app --name ${APP_NAME_DEV} python:latest ${APP_GIT_URL} --context-dir ${CONTEXT_DIR}
+                                        oc expose svc/${APP_NAME_DEV}
                                     '''
                             }
                         }
@@ -50,7 +51,7 @@ pipeline {
                     script {
                         openshift.withCluster() {
                             openshift.withProject( "${DEV_PROJECT}" ) {
-                                def bc = openshift.selector("bc", "${APP_NAME}")
+                                def bc = openshift.selector("bc", "${APP_NAME_DEV}")
                                 bc.logs('-f')
                                 def builds = bc.related('builds')
                                 builds.untilEach(1) {
@@ -67,11 +68,59 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject( "${DEV_PROJECT}" ) {
-                            echo "Deployment is done!"
+                            def deployment = openshift.selector("dc", "${APP_NAME_DEV}").rollout()
+                            openshift.selector("dc", "${APP_NAME_DEV}").related('pods').untilEach(1) {
+                                return (it.object().status.phase == "Running")
+                            }
                             }
                         }
                     }
                 }
             }
+
+        stage('Promote to Prod Env') {
+            steps {
+                timeout(time: 60, unit: 'MINUTES') {
+                    input message: "Promote to Staging?"
+                }
+                script {
+                    openshift.withCluster() {
+                    openshift.tag("${DEV_PROJECT}/${APP_NAME_DEV}:latest")
+                    }
+                }
+            }
         }
+
+        stage('Deploy to Staging Env') {
+            steps {
+                echo '### Cleaning existing resources in Prod ###'
+                sh '''
+                        oc project ${DEV_PROJECT}
+                        oc delete all -l app=${APP_NAME_PROD}
+                        sleep 5
+                   '''
+
+                echo '### Creating a new app in Prod ###'
+                sh '''
+                        oc new-app --name ${APP_NAME_PROD} -i ${APP_NAME_DEV}:latest
+                        oc expose svc/${APP_NAME_PROD}
+                   '''
+            }
+        }
+        stage('Wait for deployment in Staging') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject( "${STAGE_PROJECT}" ) {
+                            def deployment = openshift.selector("dc", "${APP_NAME_PROD}").rollout()
+                            openshift.selector("dc", "${APP_NAME_PROD}").related('pods').untilEach(1) {
+                                return (it.object().status.phase == "Running")
+                            }
+                        }
+                        echo "Deployment to Staging env is complete."
+                    }
+                }
+            }
+        }    
     }
+}
