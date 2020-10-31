@@ -83,7 +83,7 @@ pipeline {
                 }
                 script {
                     openshift.withCluster() {
-                    openshift.tag("${DEV_PROJECT}/${APP_NAME_DEV}:latest", "${DEV_PROJECT}/${APP_NAME_STAGE}:latest")
+                    openshift.tag("${DEV_PROJECT}/${APP_NAME_DEV}:latest", "${DEV_PROJECT}/${APP_NAME_PROD}:latest")
                     }
                 }
             }
