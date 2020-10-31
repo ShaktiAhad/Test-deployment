@@ -73,6 +73,7 @@ pipeline {
                             openshift.selector("dc", "${APP_NAME_DEV}").related('pods').untilEach(1) {
                                 return (it.object().status.phase == "Running")
                             }
+                            echo "Deployment to Dev env is complete."
                             }
                         }
                     }
@@ -118,7 +119,7 @@ pipeline {
                                 return (it.object().status.phase == "Running")
                             }
                         }
-                        echo "Deployment to Staging env is complete."
+                        echo "Deployment to Prod env is complete."
                     }
                 }
             }
