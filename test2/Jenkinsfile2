@@ -110,11 +110,16 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject( "${DEV_PROJECT}" ) {
-                            echo "Deployment to Prod env is complete."
+                             def deploy = openshift.selector("dc", templateName).rollout().latest()
+                             timeout(5) { 
+                                    deploy.untilEach(1) {
+                                    return (it.object().status.phase == "Running")
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }    
+            }    
+        }
     }
 }
