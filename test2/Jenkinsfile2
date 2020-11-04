@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script{
                     openshift.withCluster() {
-                        openshift.withProject(${DEV_PROJECT}) {
+                        openshift.withProject( "${DEV_PROJECT}" ) {
                             script {
                                 def bc = openshift.selector("bc", "${APP_NAME_DEV}")
                                 if (bc.exists()) {
