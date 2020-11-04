@@ -24,10 +24,9 @@ pipeline {
             steps {
                 script{
                     openshift.withCluster() {
-                        openshift.withProject( "${DEV_PROJECT}" ) {
+                        openshift.withProject(${DEV_PROJECT}) {
                             script {
-                                def bc = openshift.selector( "bc", "${APP_NAME_DEV}")
-                                if (bc.exists()) {
+                                if (openshift.bc(${APP_NAME_DEV}).exists()) {
                                     sh '''
                                         oc project ${DEV_PROJECT}
                                         oc start-build ${APP_NAME_DEV}
@@ -47,7 +46,7 @@ pipeline {
         }
 
 
-        stage('Wait for S2I build to complete') {
+        stage('Wait for deployment in Dev') {
                 steps {
                     script {
                         openshift.withCluster() {
@@ -59,18 +58,7 @@ pipeline {
                                     return (it.object().status.phase == "Complete")
                                 }
                             }
-                        }
-                    }
-                }
-            }
-
-        stage('Wait for deployment in DEV env') {
-            steps {
-                script {
-                    openshift.withCluster() {
-                        openshift.withProject( "${DEV_PROJECT}" ) {
-                            echo "Deployment to Dev env is complete."
-                            }
+                            echo "Deployment to Dev env is completed."
                         }
                     }
                 }
@@ -89,32 +77,30 @@ pipeline {
             }
         }
 
-        stage('Deploy to Staging Env') {
-            steps {
-                echo '### Cleaning existing resources in Prod ###'
-                sh '''
-                        oc project ${DEV_PROJECT}
-                        oc delete all -l app=${APP_NAME_PROD}
-                        sleep 5
-                   '''
-
-                echo '### Creating a new app in Prod ###'
-                sh '''
-                        oc new-app --name ${APP_NAME_PROD} -i ${APP_NAME_DEV}:latest
-                        oc expose svc/${APP_NAME_PROD}
-                   '''
-            }
-        }
-        stage('Wait for deployment in Staging') {
+        stage('Wait for deployment in Prod') {
             steps {
                 script {
                     openshift.withCluster() {
                         openshift.withProject( "${DEV_PROJECT}" ) {
-                            echo "Deployment to Prod env is complete."
+                           script{
+                               echo '### Cleaning existing resources in Prod ###'
+                               sh '''
+                                    oc project ${DEV_PROJECT}
+                                    oc delete all -l app=${APP_NAME_PROD}
+                                    sleep 5
+                               '''
+
+                               echo '### Creating a new app in Prod ###'
+                               sh '''
+                                    oc new-app --name ${APP_NAME_PROD} -i ${APP_NAME_PROD}:latest
+                                    oc expose svc/${APP_NAME_PROD}
+                               '''
+                           }
                         }
+                        echo "Deployment to Prod env is complete."
                     }
                 }
-            }    
-        }
+            }
+        }    
     }
 }
