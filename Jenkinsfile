@@ -1,4 +1,4 @@
-def gv
+def gv = load "jenkin.groovy"
 
 pipeline {
     agent any
@@ -8,13 +8,6 @@ pipeline {
     }
 
     stages {
-        stage('Init') {
-            steps {
-                script{
-                    gv = load "jenkin.groovy"
-                }
-            }
-        }
         stage('Build') {
             steps {
                 script{
