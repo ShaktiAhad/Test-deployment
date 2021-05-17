@@ -1,5 +1,3 @@
-// def gv = load "jenkin.groovy"
-
 pipeline {
     agent any
 
