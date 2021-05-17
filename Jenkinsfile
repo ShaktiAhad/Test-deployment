@@ -1,17 +1,20 @@
-def gv = load "jenkin.groovy"
+// def gv = load "jenkin.groovy"
 
 pipeline {
-    agent { 
-        node {
-            label 'master'
-      }
-    }
-    
+    agent any
+
     environment { 
         APP_NAME = 'demo'
     }
 
     stages {
+        stage('Init') {
+            steps {
+                script{
+                    gv = load "jenkin.groovy"
+                }
+            }
+        }
         stage('Build') {
             steps {
                 script{
