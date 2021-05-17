@@ -1,7 +1,11 @@
 def gv = load "jenkin.groovy"
 
 pipeline {
-    agent any
+    agent { 
+        node {
+            label 'master'
+      }
+    }
     
     environment { 
         APP_NAME = 'demo'
