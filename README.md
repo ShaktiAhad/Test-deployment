@@ -31,4 +31,7 @@ Oc project <application-project-name>
 Create a build config file
 
 Edit jenkin role
-oc policy add-role-to-user edit system:serviceaccount:<jenkin-project-name>:jenkins -n <application-project-name>![image](https://user-images.githubusercontent.com/53283457/118635824-fdada280-b80e-11eb-9252-ac3695f92708.png)
+oc policy add-role-to-user edit system:serviceaccount:<jenkin-project-name>:jenkins -n <application-project-name>
+  
+  
+  
