@@ -6,13 +6,13 @@ To run it on your recommended port go to service config --> target port: $(chang
 Reference: Pdf file D0280 Page- 379 384
 
 Need 2 projects. One for Jenkin pipeline and one for main application
-oc new-project <jenkin-project-name>
-oc new-project <application-project-name>
+oc new-project jenkin-project-name
+oc new-project application-project-name
 
 Jenkin project configuration:
 
 Change to jenkin project 
-Oc project <jenkin-project-name>
+Oc project jenkin-project-name
 
 From developer section deploy a jenkin application from catalog
 
@@ -27,11 +27,11 @@ Click "apply" and then "save" button
   
 Main application project configuration:
 
-Oc project <application-project-name>
+Oc project application-project-name
 Create a build config file
 
 Edit jenkin role
-oc policy add-role-to-user edit system:serviceaccount:<jenkin-project-name>:jenkins -n <application-project-name>
+oc policy add-role-to-user edit system:serviceaccount:jenkin-project-name:jenkins -n application-project-name
   
   
   
