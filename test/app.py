@@ -7,7 +7,7 @@ INPUT = os.getenv('INPUT')
 
 @app.route("/")
 def hello():
-    return f"Hello ${INPUT} from python 2nd time!"
+    return f"Hello {INPUT} from python 2nd time!"
 
 
 if __name__ == "__main__":
