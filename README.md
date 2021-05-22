@@ -4,7 +4,7 @@
   
   To run it on different port go to service config --> target port: $(change it to desire port)
 
-**Reference**: Pdf file D0280 Page- 379 384
+**Reference**: Pdf file D0288 Page- 379 384
 
 Need 2 projects. One for Jenkin pipeline and one for main application \
 `oc new-project ${jenkin-project-name}` \
