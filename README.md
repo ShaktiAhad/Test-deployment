@@ -27,6 +27,6 @@ Click "apply" and then "save" button
 
 `oc project ${application-project-name}` and Create a **BC** file and \
 edit jenkin role: \
-`oc policy add-role-to-user edit system:serviceaccount:jenkin-project-name:jenkins -n application-project-name`
+`oc policy add-role-to-user edit system:serviceaccount:${jenkin-project-name}:jenkins -n ${application-project-name}`
   
   
