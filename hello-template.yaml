@@ -3,6 +3,7 @@
 #create template: oc create -f hello-template
 #delete template: oc delete template hello-template
 #process the template using following command
+#add env var in DC. INPUT: <anything>
 '''
 oc process hello-template \
   -p APPLICATION_NAME=hello \
@@ -85,6 +86,7 @@ objects:
     selector:
       app: ${APPLICATION_NAME}
       deploymentconfig: ${APPLICATION_NAME}
+    replicas: 1
     template:
       metadata:
         labels:
