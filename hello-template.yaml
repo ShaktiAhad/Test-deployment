@@ -2,6 +2,7 @@
 #update host name in route. this section: "2886795292-80-host04nc"
 #create template: oc create -f hello-template
 #delete template: oc delete template hello-template
+#delete resources: oc delete all -l name=hello <APPLICATION_NAME>
 #process the template using following command
 #add env var in DC. INPUT: <anything>
 '''
