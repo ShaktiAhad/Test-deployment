@@ -1,0 +1,151 @@
+#template for hello message. 
+#change "2886795292-80-host04nc" from host in route
+#create template: oc create -f hello-template
+#delete template: oc delete template hello-template
+#process the template using following command
+'''
+oc process hello-template \
+  -p APPLICATION_NAME=hello \
+  -p SOURCE_REPOSITORY=https://github.com/ShaktiAhad/Test-deployment.git \
+  -p REPOSITORY_BRANCH_REF=main \
+  -p CONTEXT_DIR=/test \
+  -p NAMESPACE=hellopython \
+  | oc apply -f -
+
+'''
+
+apiVersion: v1
+kind: Template
+metadata:
+  name: hello-template
+
+objects:
+
+- kind: BuildConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    namespace: ${NAMESPACE}
+    resourceVersion: '326279'
+    labels:
+      app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+  spec:
+    runPolicy: Serial
+    source:
+      type: Git
+      git:
+        uri: ${SOURCE_REPOSITORY}
+        ref: ${REPOSITORY_BRANCH_REF}
+      contextDir: ${CONTEXT_DIR}
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: openshift
+          name: 'python:3.6'
+    output:
+      to:
+        kind: ImageStreamTag
+        name: '${APPLICATION_NAME}:latest'
+
+- kind: ImageStream
+  apiVersion: image.openshift.io/v1
+  metadata:
+    resourceVersion: '327373'
+    name: ${APPLICATION_NAME}
+    labels:
+      app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+
+- kind: DeploymentConfig
+  apiVersion: apps.openshift.io/v1
+  metadata:
+    resourceVersion: '329014'
+    name: ${APPLICATION_NAME}
+    namespace: ${NAMESPACE}
+    labels:
+      app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+  spec:
+    strategy:
+      type: Rolling
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - ${APPLICATION_NAME}
+          from:
+            kind: ImageStreamTag
+            namespace: ${NAMESPACE}
+            name: 'hello:latest'
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    template:
+      metadata:
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+      spec:
+        containers:
+          - name: ${APPLICATION_NAME}
+            image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${APPLICATION_NAME}:latest
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    namespace: ${NAMESPACE}
+    resourceVersion: '296552'
+    labels:
+      app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+  spec:
+    ports:
+      - name: 8080-tcp
+        protocol: TCP
+        port: 8080
+        targetPort: 8080
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+
+- kind: Route
+  apiVersion: route.openshift.io/v1
+  metadata:
+    resourceVersion: '295610'
+    name: ${APPLICATION_NAME}
+    namespace: ${NAMESPACE}
+    labels:
+      app: ${APPLICATION_NAME}
+      name: ${APPLICATION_NAME}
+  spec:
+    host: ${APPLICATION_NAME}-${NAMESPACE}.2886795292-80-host04nc.environments.katacoda.com
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
+    port:
+      targetPort: 8080-tcp
+
+parameters:
+- name: NAMESPACE
+  description: Project name 
+
+- name: APPLICATION_NAME
+  description: Name of the application
+
+- name: SOURCE_REPOSITORY
+  description: Github repository name
+
+- name: REPOSITORY_BRANCH_REF
+  description: Repository branch name
+
+- name: CONTEXT_DIR
+  description: Specific directory for application
