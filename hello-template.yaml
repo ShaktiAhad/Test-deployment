@@ -1,5 +1,5 @@
 #template for hello message. 
-#change "2886795292-80-host04nc" from host in route
+#update host name in route. this section: "2886795292-80-host04nc"
 #create template: oc create -f hello-template
 #delete template: oc delete template hello-template
 #process the template using following command
