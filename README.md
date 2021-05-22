@@ -1,5 +1,6 @@
 # Test-deployment
-**Deployment with different port**
+**Run app on different port:**
+
   By default the application will run on port 8080. 
   
   To run it on different port go to service config --> target port: $(change it to desire port)
