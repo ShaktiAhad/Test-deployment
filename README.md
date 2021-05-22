@@ -24,14 +24,10 @@ In the "Namespace" section put the jenkin project name and the application proje
 Click "apply" and then "save" button 
 
 
+Main application project configuration:\
+`oc project ${application-project-name}` and Create a **BC** file
 
-  
-Main application project configuration:
-
-Oc project application-project-name
-Create a build config file
-
-Edit jenkin role
+Edit jenkin role \
 `oc policy add-role-to-user edit system:serviceaccount:jenkin-project-name:jenkins -n application-project-name`
   
   
