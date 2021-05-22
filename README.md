@@ -10,13 +10,12 @@ Need 2 projects. One for Jenkin pipeline and one for main application \
 `oc new-project ${jenkin-project-name}` \
 `oc new-project ${application-project-name}`
 
-**Jenkin project configuration:**
+
+**Create Jenkin application and configure Jenkin:**
 
 Change to jenkin project: `oc project ${jenkin-project-name}`
 
 From **developer** section deploy a jenkin application from catalog 
-
-**Configure the jenkin application:** 
 
 Go to Manage Jenkins --> Configure System --> OpenShift Jenkins Sync \
 In the "Namespace" section put the ***${jenkin-project-name}*** and the ***${application-project-name}*** with **space** between them \
