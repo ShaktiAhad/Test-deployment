@@ -1,0 +1,39 @@
+kind: DeploymentConfig
+  apiVersion: apps.openshift.io/v1
+  metadata:
+    resourceVersion: '329014'
+    name: hello
+    namespace: hellopython
+    labels:
+      app: hello
+      name: hello
+  spec:
+    strategy:
+      type: Rolling
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - hello
+          from:
+            kind: ImageStreamTag
+            namespace: hellopython
+            name: 'hello:latest'
+    selector:
+      app: hello
+      deploymentconfig: hello
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: hello
+          deploymentconfig: hello
+      spec:
+        containers:
+          - name: hello
+            image: image-registry.openshift-image-registry.svc:5000/hellopython/hello:latest
+            ports:
+              - containerPort: 8080
+                protocol: TCP

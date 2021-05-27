@@ -1,0 +1,8 @@
+kind: ImageStream
+  apiVersion: image.openshift.io/v1
+  metadata:
+    resourceVersion: '327373'
+    name: hello
+    labels:
+      app: hello
+      name: hello

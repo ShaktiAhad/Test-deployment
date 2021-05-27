@@ -1,0 +1,27 @@
+kind: BuildConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: hello
+    namespace: hellopython
+    resourceVersion: '326279'
+    labels:
+      app: hello
+      name: hello
+  spec:
+    source:
+      type: Git
+      git:
+        uri: https://github.com/ShaktiAhad/Test-deployment.git
+        ref: main
+      contextDir: /hello
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: openshift
+          name: 'python:3.6'
+    output:
+      to:
+        kind: ImageStreamTag
+        name: 'hello:latest'

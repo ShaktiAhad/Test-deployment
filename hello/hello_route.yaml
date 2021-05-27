@@ -1,0 +1,16 @@
+kind: Route
+  apiVersion: route.openshift.io/v1
+  metadata:
+    resourceVersion: '295610'
+    name: hello
+    namespace: hellopython
+    labels:
+      app: hello
+      name: hello
+  spec:
+    host: hello-hellopython.2886795292-80-host04nc.environments.katacoda.com
+    to:
+      kind: Service
+      name: hello
+    port:
+      targetPort: 8080-tcp

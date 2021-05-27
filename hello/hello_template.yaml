@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: hello-template
+
+objects:
+
+- kind: BuildConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: hello
+    namespace: hellopython
+    resourceVersion: '326279'
+    labels:
+      app: hello
+      name: hello
+  spec:
+    source:
+      type: Git
+      git:
+        uri: https://github.com/ShaktiAhad/Test-deployment.git
+        ref: main
+      contextDir: /hello
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: openshift
+          name: 'python:3.6'
+    output:
+      to:
+        kind: ImageStreamTag
+        name: 'hello:latest'
+
+- kind: ImageStream
+  apiVersion: image.openshift.io/v1
+  metadata:
+    resourceVersion: '327373'
+    name: hello
+    labels:
+      app: hello
+      name: hello
+
+- kind: DeploymentConfig
+  apiVersion: apps.openshift.io/v1
+  metadata:
+    resourceVersion: '329014'
+    name: hello
+    namespace: hellopython
+    labels:
+      app: hello
+      name: hello
+  spec:
+    strategy:
+      type: Rolling
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - hello
+          from:
+            kind: ImageStreamTag
+            namespace: hellopython
+            name: 'hello:latest'
+    selector:
+      app: hello
+      deploymentconfig: hello
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: hello
+          deploymentconfig: hello
+      spec:
+        containers:
+          - name: hello
+            image: image-registry.openshift-image-registry.svc:5000/hellopython/hello:latest
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: hello
+    namespace: hellopython
+    resourceVersion: '296552'
+    labels:
+      app: hello
+      name: hello
+  spec:
+    ports:
+      - name: 8080-tcp
+        protocol: TCP
+        port: 8080
+        targetPort: 8080
+    selector:
+      app: hello
+      deploymentconfig: hello
+
+- kind: Route
+  apiVersion: route.openshift.io/v1
+  metadata:
+    resourceVersion: '295610'
+    name: hello
+    namespace: hellopython
+    labels:
+      app: hello
+      name: hello
+  spec:
+    host: hello-hellopython.2886795292-80-host04nc.environments.katacoda.com
+    to:
+      kind: Service
+      name: hello
+    port:
+      targetPort: 8080-tcp
