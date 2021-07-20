@@ -1,1 +1,1 @@
-# Test-deployment for practice.
+# Test-deployment for practices.
