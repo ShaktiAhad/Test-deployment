@@ -1,5 +1,4 @@
 ADD file:6340c690b08865d7eb84a36050a0ab0e8effc2b010a4ccb20b810153a97a9228 in / 
-LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20180804
 CMD ["/bin/bash"]
 MAINTAINER Matteo Capitanio <matteo.capitanio@gmail.com> 
 ENV JAVA_VER=11
