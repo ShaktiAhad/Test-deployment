@@ -1,3 +1,4 @@
+FROM talend/datacatalog-remote-harvesting-agent
 ADD file:6340c690b08865d7eb84a36050a0ab0e8effc2b010a4ccb20b810153a97a9228 in / 
 CMD ["/bin/bash"]
 MAINTAINER Matteo Capitanio <matteo.capitanio@gmail.com> 
